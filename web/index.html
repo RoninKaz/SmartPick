@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SmartPick — Find Your Perfect Phone</title>
+<link rel="icon" type="image/png" href="/favicon.png?v=3">
+<link rel="shortcut icon" href="/favicon.ico?v=3">
+<link rel="apple-touch-icon" href="/favicon.png?v=3">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap">
+<script>try{var th=localStorage.getItem("sp_theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=th}catch(e){}</script>
+<style>
+:root{--goodbg:#eaf3ec;--badbg:#fbeceb;color-scheme:light;--bg:#fbf7f0;--panel:#fffdf9;--ink:#2a1218;--mute:#7a5c62;--line:#e6dccf;--acc:#6b1a2e;--acc-ink:#fbf5ee;--cheap:#2f6b45;--pricey:#9a5a12;--bad:#a8201a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Manrope,system-ui,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 56px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+@media(max-width:640px){.stats{grid-template-columns:1fr}}
+.stat{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:8px;padding:10px 14px}
+.stat small{color:var(--mute);display:block}.stat b{font-size:17px}
+.filters{display:flex;flex-wrap:wrap;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:18px;align-items:end}
+.filters label{display:flex;flex-direction:column;font-size:14px;color:var(--mute);gap:3px}
+input,select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);min-width:130px}
+button{font:inherit;font-weight:600;padding:9px 14px;border:1px solid var(--acc);background:var(--acc);color:var(--acc-ink);border-radius:6px;cursor:pointer}
+button.alt{background:transparent;color:var(--acc)}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.card.sel{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc)}
+.card h3{margin:0;font-size:17px}.card .brand{color:var(--mute);font-size:14px}
+.price{font-size:20px;font-weight:800}
+.spec{color:var(--mute);font-size:14px}
+.tag{align-self:flex-start;font-size:12px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid currentColor}
+.tag.cheap{color:var(--cheap)}.tag.pricey{color:var(--pricey)}
+.card label{margin-top:auto;display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer}
+.card input{min-width:0}
+section.box{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;margin-top:20px}
+section.box h2{margin:0 0 10px;font-size:20px}
+.row{margin:12px 0}.row .lbl{display:flex;justify-content:space-between;font-size:14px;color:var(--mute)}
+.bars{display:grid;gap:4px;margin-top:4px}
+.bar{height:22px;border-radius:4px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .7s cubic-bezier(.2,.8,.2,1);color:var(--acc-ink);font:600 12px/22px Manrope,sans-serif;padding-left:8px;white-space:nowrap}
+.bar i.win{background:var(--cheap)}
+@media(prefers-reduced-motion:reduce){.bar i{transition:none}}
+.add{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+.add label{display:flex;flex-direction:column;font-size:14px;color:var(--mute);gap:3px}
+.err{color:var(--bad);font-weight:600;margin-top:8px;min-height:1.5em}
+.empty{color:var(--mute);padding:12px 0}
+.count{color:var(--mute);font-size:14px;margin-bottom:8px}
+.layout{display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start}
+.layout>*{min-width:0}
+.layout #cmp{margin-top:0;position:sticky;top:12px}
+@media(max-width:860px){.layout{grid-template-columns:1fr}.layout #cmp{order:-1;position:static}}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;text-align:center;margin-bottom:6px}
+.vs b{font-size:15px;line-height:1.25}.vs span{font-weight:800;color:var(--mute)}
+.side{display:flex;flex-direction:column;align-items:center;gap:8px}
+.art{width:84px;color:var(--mute)}.art svg{display:block;width:100%;height:auto}
+.lbl2{text-align:center;font-size:13px;color:var(--mute);margin-top:12px}
+.duel{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:3px}
+.half{height:20px;background:var(--line);border-radius:4px;overflow:hidden;display:flex}
+.half.l{justify-content:flex-end}
+.half i{display:block;height:100%;width:0;background:var(--acc);transition:width .7s cubic-bezier(.2,.8,.2,1)}
+.half i.win{background:var(--cheap)}
+.vals{display:flex;justify-content:space-between;font-size:14px;font-weight:700;margin-top:2px}
+@media(prefers-reduced-motion:reduce){.half i{transition:none}}
+.acts{display:flex;gap:6px;margin-top:4px}
+.acts button{font-size:13px;padding:5px 10px;flex:1}
+button.danger{background:transparent;color:var(--bad);border-color:var(--bad)}
+.camwin{margin-top:14px;padding:10px 12px;border-radius:8px;background:var(--goodbg);border:1px solid var(--cheap);color:var(--cheap);font-weight:700;text-align:center}
+.camwin.tie{background:var(--bg);border-color:var(--line);color:var(--mute)}
+.card.edit{border-color:var(--pricey);box-shadow:0 0 0 2px var(--pricey)}
+.offline{background:var(--badbg);border:1px solid var(--bad);color:var(--bad);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-weight:600;display:none}
+.offline code{background:var(--panel);padding:1px 5px;border-radius:4px}
+
+html[data-theme="dark"]{--bg:#141012;--panel:#1e181b;--ink:#f3e9eb;--mute:#b3a1a5;--line:#3a3034;--acc:#e07a91;--acc-ink:#1a0e12;--cheap:#62c58c;--pricey:#e5a552;--bad:#ff7a6e;--goodbg:#173023;--badbg:#3a1a1a;color-scheme:dark}
+body{transition:background .25s,color .25s}
+.hero{position:relative;text-align:center;padding:28px 0 6px;margin-bottom:18px}
+.brandrow{display:flex;align-items:center;justify-content:center;gap:12px}
+.logo{height:64px;width:auto;flex:none}
+@media(max-width:640px){.logo{height:48px}}
+.hero h1{margin:0;font-size:56px;line-height:1.05;font-weight:800;letter-spacing:-1.5px;color:var(--acc)}
+.hero h1 span{color:var(--ink)}
+.tagline{margin:6px 0 0;font-size:19px;font-weight:600;letter-spacing:.5px;color:var(--ink)}
+.sub{color:var(--mute);margin:8px 0 0;font-size:15px}
+@media(max-width:640px){.hero{padding-top:56px}.hero h1{font-size:42px}.tagline{font-size:16px}}
+.tools{position:absolute;top:0;right:0;display:flex;gap:8px;align-items:center}
+.seg{display:flex;border:1px solid var(--line);border-radius:99px;overflow:hidden;background:var(--panel)}
+.seg button{background:transparent;color:var(--mute);border:0;border-radius:0;padding:6px 11px;font-size:13px;font-weight:700}
+.seg button[aria-pressed="true"]{background:var(--acc);color:var(--acc-ink)}
+.themeBtn{display:flex;align-items:center;justify-content:center;width:36px;height:34px;padding:0;border-radius:99px;background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+.themeBtn svg{width:18px;height:18px}
+</style>
+</head>
+<body>
+<main>
+<header class="hero">
+<div class="tools">
+<div class="seg" role="group" aria-label="Language">
+<button type="button" data-lang="kk">ҚАЗ</button><button type="button" data-lang="ru">РУС</button><button type="button" data-lang="en">ENG</button>
+</div>
+<button type="button" class="themeBtn" id="themeBtn"></button>
+</div>
+<div class="brandrow"><svg class="logo" role="img" aria-label="SmartPick logo" viewBox="17 11 65 78" xmlns="http://www.w3.org/2000/svg"><rect x="20.8" y="13.8" width="42" height="62.2" rx="9" style="fill:var(--acc)"/><rect x="24.8" y="23" width="34.4" height="45.4" rx="4" style="fill:var(--bg)"/><rect x="36.8" y="18.4" width="10.4" height="2.2" rx="1.1" style="fill:var(--bg)"/><rect x="37.4" y="26.6" width="40.8" height="60.2" rx="8" style="fill:var(--acc)"/><rect x="52" y="31.2" width="12" height="2.6" rx="1.3" style="fill:var(--bg)"/><rect x="51.2" y="78" width="13.2" height="4.4" rx="2.2" style="fill:var(--bg)"/><path d="M45.4 56.2 L54.6 65.6 L71.4 49 L68 45.6 L55 58 L49.4 52.5 Z" style="fill:var(--bg)"/></svg><h1>Smart<span>Pick</span></h1></div>
+<p class="tagline">Find Your Perfect Phone</p>
+<p class="sub" data-i18n="sub"></p>
+</header>
+<div class="offline" id="offline" data-i18n-html="offline"></div>
+
+<div class="stats">
+<div class="stat"><small data-i18n="cheapest"></small><b id="stCheap">–</b></div>
+<div class="stat"><small data-i18n="priciest"></small><b id="stPricey">–</b></div>
+<div class="stat"><small data-i18n="avg"></small><b id="stAvg">–</b></div>
+</div>
+
+<div class="filters">
+<label><span data-i18n="brand"></span><select id="fBrand"></select></label>
+<label><span data-i18n="priceMin"></span><input id="fMin" type="number" min="0" placeholder="0"></label>
+<label><span data-i18n="priceMax"></span><input id="fMax" type="number" min="0" data-i18n-ph="noLimit"></label>
+<label><span data-i18n="memMin"></span><select id="fMem"><option value="0" data-i18n="any"></option><option value="128">128 GB</option><option value="256">256 GB</option><option value="512">512 GB</option></select></label>
+<label><span data-i18n="ramMin"></span><select id="fRam"><option value="0" data-i18n="any"></option><option value="4">4 GB</option><option value="6">6 GB</option><option value="8">8 GB</option><option value="12">12 GB</option></select></label>
+<label><span data-i18n="batMin"></span><select id="fBat"><option value="0" data-i18n="any"></option><option value="4000">4000 mAh</option><option value="5000">5000 mAh</option><option value="5500">5500 mAh</option></select></label>
+<label><span data-i18n="camMin"></span><select id="fCam"><option value="0" data-i18n="any"></option><option value="50">50 MP</option><option value="100">100 MP</option><option value="200">200 MP</option></select></label>
+<label><span data-i18n="modelName"></span><input id="fText" type="search" data-i18n-ph="eg"></label>
+<label><span data-i18n="sort"></span><select id="fSort"><option value="" data-i18n="sortNone"></option><option value="price-asc" data-i18n="sortPriceAsc"></option><option value="price-desc" data-i18n="sortPriceDesc"></option><option value="camera-desc" data-i18n="sortCam"></option><option value="battery-desc" data-i18n="sortBat"></option><option value="ram-desc" data-i18n="sortRam"></option></select></label>
+<button class="alt" id="fReset" data-i18n="reset"></button>
+</div>
+
+<div class="layout">
+<div><div class="count" id="count"></div><div class="cards" id="cards" aria-live="polite"></div></div>
+<section class="box" id="cmp" aria-live="polite">
+<h2 data-i18n="compare"></h2>
+<div id="cmpBody"></div>
+</section>
+</div>
+
+<section class="box" id="formBox">
+<h2 id="formTitle"></h2>
+<div class="add">
+<label><span data-i18n="brand"></span><input id="aBrand"></label>
+<label><span data-i18n="model"></span><input id="aModel"></label>
+<label><span data-i18n="price"></span><input id="aPrice" type="number" min="1"></label>
+<label><span data-i18n="memory"></span><input id="aMem" type="number" min="1"></label>
+<label><span data-i18n="ram"></span><input id="aRam" type="number" min="1"></label>
+<label><span data-i18n="battery"></span><input id="aBat" type="number" min="1"></label>
+<label><span data-i18n="camera"></span><input id="aCam" type="number" min="1"></label>
+<button id="aBtn"></button>
+<button class="alt" id="aCancel" data-i18n="cancel" hidden></button>
+</div>
+<div class="err" id="aErr" role="alert"></div>
+</section>
+</main>
+
+<script>
+// SmartPick — деректер мен логика серверде (Java немесе Python). Бұл бет тек көрсетеді.
+// ---------- Тілдер: қазақша, орысша, ағылшынша ----------
+var I18N = {
+ kk:{sub:"Іздеңіз, екі смартфонды таңдап салыстырыңыз немесе жаңасын қосыңыз.",
+  offline:"Сервер жауап бермеді. Сайтты <code>run_java.bat</code> немесе <code>run_python.bat</code> арқылы ашыңыз, содан кейін бетті жаңартыңыз.",
+  cheapest:"Ең арзан",priciest:"Ең қымбат",avg:"Орташа баға",brand:"Бренд",model:"Модель",
+  priceMin:"Баға, ₸ (ең төмен)",priceMax:"Баға, ₸ (ең жоғары)",noLimit:"шектеусіз",memMin:"Жады (ең аз)",ramMin:"RAM (ең аз)",
+  batMin:"Аккумулятор (ең аз)",camMin:"Камера (ең аз)",any:"Кез келген",modelName:"Модель аты",eg:"мысалы, Pro",
+  sort:"Тартып реттеу",sortNone:"Каталог ретімен",sortPriceAsc:"Баға: арзандан қымбатқа",sortPriceDesc:"Баға: қымбаттан арзанға",
+  sortCam:"Камера: көптен азға",sortBat:"Аккумулятор: көптен азға",sortRam:"RAM: көптен азға",reset:"Тазалау",
+  compare:"Салыстыру",cmpCheck:"Салыстыру",addTitle:"Смартфон қосу",editTitle:"Өзгерту",add:"Қосу",save:"Сақтау",cancel:"Болдырмау",
+  edit:"Өзгерту",del:"Жою",all:"Барлығы",found:"Табылды",nothing:"Ештеңе табылмады. Сүзгіні өзгертіп көріңіз.",
+  price:"Баға, ₸",memory:"Жады, GB",ram:"RAM, GB",battery:"Аккумулятор, mAh",camera:"Камера, MP",
+  pick1:"1-смартфон таңдалмаған",pick2:"2-смартфон таңдалмаған",pickHint:"Карточкалардағы «Салыстыру» белгісін қойыңыз.",
+  tie:"тең",camBetter:"Камерасы жақсы",camTie:"Камералары тең",priceDiff:"Баға айырмасы",confirmDel:"{name} каталогтан жойылсын ба?",
+  noServer:"Сервер жауап бермеді.",dark:"Қараңғы тема",light:"Жарық тема",
+  errFill:"Бренд пен модельді толтырыңыз.",errSemi:"Атауда «;» белгісі болмауы керек.",
+  errPos:"Баға, жады, RAM, аккумулятор және камера оң сан болуы керек.",errNotFound:"Смартфон табылмады."},
+ ru:{sub:"Ищите, сравнивайте два смартфона или добавляйте новые.",
+  offline:"Сервер не отвечает. Откройте сайт через <code>run_java.bat</code> или <code>run_python.bat</code> и обновите страницу.",
+  cheapest:"Самый дешёвый",priciest:"Самый дорогой",avg:"Средняя цена",brand:"Бренд",model:"Модель",
+  priceMin:"Цена, ₸ (от)",priceMax:"Цена, ₸ (до)",noLimit:"без ограничения",memMin:"Память (от)",ramMin:"RAM (от)",
+  batMin:"Аккумулятор (от)",camMin:"Камера (от)",any:"Любая",modelName:"Название модели",eg:"например, Pro",
+  sort:"Сортировка",sortNone:"Как в каталоге",sortPriceAsc:"Цена: сначала дешёвые",sortPriceDesc:"Цена: сначала дорогие",
+  sortCam:"Камера: больше MP",sortBat:"Аккумулятор: больше mAh",sortRam:"RAM: больше",reset:"Сбросить",
+  compare:"Сравнение",cmpCheck:"Сравнить",addTitle:"Добавить смартфон",editTitle:"Изменить",add:"Добавить",save:"Сохранить",cancel:"Отмена",
+  edit:"Изменить",del:"Удалить",all:"Все",found:"Найдено",nothing:"Ничего не найдено. Попробуйте изменить фильтры.",
+  price:"Цена, ₸",memory:"Память, GB",ram:"RAM, GB",battery:"Аккумулятор, mAh",camera:"Камера, MP",
+  pick1:"1-й смартфон не выбран",pick2:"2-й смартфон не выбран",pickHint:"Отметьте «Сравнить» на двух карточках.",
+  tie:"равно",camBetter:"Камера лучше у",camTie:"Камеры одинаковые",priceDiff:"Разница в цене",confirmDel:"Удалить {name} из каталога?",
+  noServer:"Сервер не отвечает.",dark:"Тёмная тема",light:"Светлая тема",
+  errFill:"Заполните бренд и модель.",errSemi:"В названии не должно быть знака «;».",
+  errPos:"Цена, память, RAM, аккумулятор и камера должны быть положительными числами.",errNotFound:"Смартфон не найден."},
+ en:{sub:"Search, compare two phones side by side, or add a new one.",
+  offline:"The server is not responding. Open the site with <code>run_java.bat</code> or <code>run_python.bat</code>, then reload the page.",
+  cheapest:"Cheapest",priciest:"Most expensive",avg:"Average price",brand:"Brand",model:"Model",
+  priceMin:"Price, ₸ (min)",priceMax:"Price, ₸ (max)",noLimit:"no limit",memMin:"Storage (min)",ramMin:"RAM (min)",
+  batMin:"Battery (min)",camMin:"Camera (min)",any:"Any",modelName:"Model name",eg:"e.g. Pro",
+  sort:"Sort by",sortNone:"Catalog order",sortPriceAsc:"Price: low to high",sortPriceDesc:"Price: high to low",
+  sortCam:"Camera: highest first",sortBat:"Battery: largest first",sortRam:"RAM: most first",reset:"Reset",
+  compare:"Compare",cmpCheck:"Compare",addTitle:"Add a phone",editTitle:"Edit",add:"Add",save:"Save",cancel:"Cancel",
+  edit:"Edit",del:"Delete",all:"All",found:"Found",nothing:"Nothing found. Try changing the filters.",
+  price:"Price, ₸",memory:"Storage, GB",ram:"RAM, GB",battery:"Battery, mAh",camera:"Camera, MP",
+  pick1:"Phone 1 not selected",pick2:"Phone 2 not selected",pickHint:"Tick “Compare” on two cards.",
+  tie:"tie",camBetter:"Better camera",camTie:"Cameras are equal",priceDiff:"Price difference",confirmDel:"Delete {name} from the catalog?",
+  noServer:"The server is not responding.",dark:"Dark theme",light:"Light theme",
+  errFill:"Fill in the brand and model.",errSemi:"The name must not contain “;”.",
+  errPos:"Price, storage, RAM, battery and camera must be positive numbers.",errNotFound:"Phone not found."}
+};
+// Сервер қателерді қазақша қайтарады - оларды таңдалған тілге аударамыз
+var SERVER_ERRORS = {};
+["errFill","errSemi","errPos","errNotFound"].forEach(function(k){ SERVER_ERRORS[I18N.kk[k]] = k });
+var COMPARE_KEYS = {price:"price",memory:"memory",ram:"ram",battery:"battery",camera:"camera"};
+
+function store(key, value){ try{ if(value === undefined) return localStorage.getItem(key); localStorage.setItem(key, value) }catch(e){ return null } }
+var lang = store("sp_lang") || "kk";
+if(!I18N[lang]) lang = "kk";
+function t(k){ return (I18N[lang] && I18N[lang][k]) || I18N.kk[k] || k }
+
+var picked = [];
+var $ = function(id){return document.getElementById(id)};
+var fmt = function(n){return Math.round(n).toLocaleString("ru-RU")+" ₸"};
+function el(tag, cls, text){var e=document.createElement(tag); if(cls)e.className=cls; if(text!==undefined)e.textContent=text; return e}
+function name(p){return p ? p.brand+" "+p.model : "–"}
+
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach(function(e){ e.textContent = t(e.dataset.i18n) });
+  document.querySelectorAll("[data-i18n-ph]").forEach(function(e){ e.placeholder = t(e.dataset.i18nPh) });
+  document.querySelectorAll("[data-i18n-html]").forEach(function(e){ e.innerHTML = t(e.dataset.i18nHtml) });
+  document.querySelectorAll(".seg button").forEach(function(b){ b.setAttribute("aria-pressed", b.dataset.lang === lang) });
+  var all = $("fBrand").options[0]; if(all) all.textContent = t("all");
+  updateForm(); updateThemeBtn();
+}
+document.querySelectorAll(".seg button").forEach(function(b){
+  b.addEventListener("click", function(){ lang = b.dataset.lang; store("sp_lang", lang); applyLang(); render(); });
+});
+
+// ---------- Жарық / қараңғы тема ----------
+var SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+var MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>';
+var theme = store("sp_theme") || (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+function updateThemeBtn(){
+  var b = $("themeBtn"), dark = theme === "dark";
+  b.innerHTML = dark ? SUN : MOON;
+  b.title = t(dark ? "light" : "dark"); b.setAttribute("aria-label", b.title);
+}
+function applyTheme(){ document.documentElement.dataset.theme = theme; updateThemeBtn(); }
+$("themeBtn").addEventListener("click", function(){ theme = theme === "dark" ? "light" : "dark"; store("sp_theme", theme); applyTheme(); });
+applyTheme();
+
+function api(path, opts){
+  return fetch(path, opts).then(function(r){
+    return r.json().then(function(d){ if(!r.ok) throw new Error(d.error || "?"); return d; });
+  });
+}
+function errText(e){
+  if(e.message === "Failed to fetch") return t("noServer");
+  return SERVER_ERRORS[e.message] ? t(SERVER_ERRORS[e.message]) : e.message;
+}
+function offline(){ $("offline").style.display = "block"; }
+
+function query(){
+  var q = new URLSearchParams();
+  [["brand","fBrand"],["min","fMin"],["max","fMax"],["memory","fMem"],["ram","fRam"],["battery","fBat"],["camera","fCam"],["q","fText"],["sort","fSort"]]
+    .forEach(function(x){ var v = $(x[1]).value; if(v !== "" && v !== "0") q.set(x[0], v); });
+  return q.toString();
+}
+
+function fillBrands(list){
+  var s = $("fBrand"), cur = s.value;
+  s.innerHTML = ""; s.appendChild(new Option(t("all"),""));
+  list.forEach(function(b){ s.appendChild(new Option(b,b)) });
+  s.value = cur;
+}
+
+var reqNo = 0;
+function render(){
+  var my = ++reqNo;
+  Promise.all([api("/api/phones?"+query()), api("/api/stats")]).then(function(r){
+    if(my !== reqNo) return;
+    $("offline").style.display = "none";
+    draw(r[0], r[1]);
+  }).catch(offline);
+}
+
+function isPicked(p){ return picked.some(function(x){return x.id === p.id}) }
+
+function draw(res, st){
+  var cheap = st.cheapest, pricey = st.priciest;
+  if($("fBrand").options.length !== st.brands.length + 1) fillBrands(st.brands);
+  $("stCheap").textContent = cheap ? name(cheap)+", "+fmt(cheap.price) : "–";
+  $("stPricey").textContent = pricey ? name(pricey)+", "+fmt(pricey.price) : "–";
+  $("stAvg").textContent = fmt(st.average);
+  picked = picked.map(function(x){ return res.items.filter(function(p){return p.id===x.id})[0] || x });
+  var box = $("cards"); box.innerHTML = "";
+  $("count").textContent = t("found")+": "+res.items.length+" / "+res.total;
+  if(!res.items.length){ box.appendChild(el("div","empty",t("nothing"))); }
+  res.items.forEach(function(p){
+    var c = el("div","card"+(isPicked(p)?" sel":""));
+    c.appendChild(el("span","brand",p.brand));
+    c.appendChild(el("h3","",p.model));
+    c.appendChild(el("div","price",fmt(p.price)));
+    c.appendChild(el("div","spec",p.memory+" GB · "+p.ram+" GB RAM"));
+    c.appendChild(el("div","spec",p.camera+" MP · "+p.battery+" mAh"));
+    if(cheap && p.id===cheap.id) c.appendChild(el("span","tag cheap",t("cheapest")));
+    if(pricey && p.id===pricey.id) c.appendChild(el("span","tag pricey",t("priciest")));
+    var l = el("label"), cb = el("input"); cb.type = "checkbox"; cb.checked = isPicked(p);
+    cb.addEventListener("change", function(){ toggle(p, cb.checked) });
+    l.appendChild(cb); l.appendChild(document.createTextNode(t("cmpCheck")));
+    c.appendChild(l);
+    var acts = el("div","acts"), be = el("button","alt",t("edit")), bd = el("button","danger",t("del"));
+    be.addEventListener("click", function(){ startEdit(p) });
+    bd.addEventListener("click", function(){ removePhone(p) });
+    acts.appendChild(be); acts.appendChild(bd); c.appendChild(acts);
+    if(editing && editing.id === p.id) c.className += " edit";
+    box.appendChild(c);
+  });
+  renderCompare();
+}
+
+function toggle(p, on){
+  picked = picked.filter(function(x){return x.id !== p.id});
+  if(on){ picked.push(p); if(picked.length>2) picked.shift(); }
+  render();
+}
+
+function brandColor(b){
+  var m = {samsung:"#27408f",apple:"#5f6672",xiaomi:"#d4561e",honor:"#17707c",google:"#5d7d6d",oneplus:"#a31f2b",realme:"#b8892a",tecno:"#2a5f8f",infinix:"#2f7d6a",vivo:"#3b4fb8",oppo:"#2f8f5b",motorola:"#3c4a6b",huawei:"#a8323a",sony:"#2b2f36",asus:"#1e2228",nothing:"#2a2c30"}, k = b.toLowerCase();
+  if(m[k]) return m[k];
+  var h = 0; for(var i=0;i<k.length;i++) h = (h*31 + k.charCodeAt(i)) % 360;
+  return "hsl("+h+",45%,36%)";
+}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function L(x,y,r,ring){
+  return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="#0b1016" stroke="'+(ring||"#cfd6dd")+'" stroke-width="1.3"/>'+
+    '<circle cx="'+(x-r*0.3)+'" cy="'+(y-r*0.3)+'" r="'+(r*0.25)+'" fill="#5b6b7a"/>';
+}
+function R(x,y,w,h,rx,fill){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+rx+'" fill="'+fill+'"/>'}
+// Әр модельдің өз көрінісі: бүйір дөңгелегі, рама түсі, камера блогы
+var DESIGN = {
+  "galaxy a55":{rx:12,frame:"#b9c2cc",cam:R(10,10,16,48,8,"rgba(0,0,0,.3)")+L(18,18,5.5)+L(18,34,5.5)+L(18,50,5.5)+'<circle cx="33" cy="16" r="2" fill="#fff"/>'},
+  "galaxy s24":{rx:9,frame:"#d8d2c4",cam:L(18,20,6.2,"#d9c27a")+L(18,36,6.2,"#d9c27a")+L(18,52,6.2,"#d9c27a")+'<circle cx="31" cy="16" r="1.8" fill="#fff"/>'},
+  "iphone 13":{rx:14,frame:"#e5e7ea",cam:R(10,10,32,32,9,"rgba(255,255,255,.14)")+L(19,19,6)+L(33,33,6)+'<circle cx="33" cy="19" r="2.2" fill="#f7e9b0"/>'},
+  "iphone 15 pro":{rx:11,frame:"#cbc3b6",cam:R(9,9,36,36,8,"rgba(255,255,255,.12)")+L(19,19,6.2)+L(19,35,6.2)+L(35,27,6.2)+'<circle cx="35" cy="14" r="2.2" fill="#f7e9b0"/>'},
+  "redmi note 13":{rx:10,frame:"rgba(0,0,0,.35)",cam:R(9,9,34,34,6,"rgba(0,0,0,.35)")+L(21,22,9,"#9aa6b2")+L(36,17,3.6)+L(36,30,3.6)},
+  "poco x6 pro":{rx:7,frame:"rgba(0,0,0,.4)",cam:R(9,9,44,26,5,"rgba(0,0,0,.4)")+L(21,22,6.5)+L(40,22,6.5)+'<rect x="4" y="64" width="72" height="12" fill="#ffd400"/>'},
+  "x8b":{rx:16,frame:"rgba(255,255,255,.4)",cam:'<circle cx="25" cy="25" r="16" fill="rgba(0,0,0,.35)" stroke="#e5e7ea" stroke-width="1.5"/>'+L(25,18,5.5)+L(25,33,5.5)},
+  "galaxy s24 ultra":{rx:6,frame:"#8d8f94",cam:L(15,18,5)+L(15,32,5)+L(15,46,5)+L(15,60,5)+'<circle cx="30" cy="16" r="1.8" fill="#fff"/>'},
+  "galaxy a15":{rx:12,frame:"rgba(0,0,0,.3)",cam:L(17,18,4.5)+L(17,31,4.5)+L(17,44,4.5)+'<circle cx="29" cy="17" r="1.6" fill="#fff"/>'},
+  "iphone 14":{rx:14,fill:"#3b4252",frame:"#d9dce0",cam:R(10,10,34,34,10,"rgba(255,255,255,.14)")+L(20,20,6.5)+L(34,34,6.5)+'<circle cx="34" cy="20" r="2.2" fill="#f7e9b0"/>'},
+  "iphone 15":{rx:13,fill:"#b8a9a4",frame:"#d4d6da",cam:R(10,10,34,34,10,"rgba(255,255,255,.2)")+L(20,20,6.5)+L(34,34,6.5)+'<circle cx="34" cy="20" r="2.4" fill="#f7e9b0"/>'},
+  "14":{rx:12,frame:"rgba(255,255,255,.35)",cam:R(8,8,40,40,10,"rgba(0,0,0,.4)")+'<circle cx="28" cy="28" r="14" fill="#0b1016" stroke="#d9d2c0" stroke-width="1.6"/>'+L(28,28,8,"#9aa6b2")+L(15,15,3.5)+L(41,15,3.5)+L(15,41,3.5)},
+  "redmi 13c":{rx:10,frame:"rgba(0,0,0,.3)",cam:R(9,9,28,34,8,"rgba(0,0,0,.3)")+L(18,19,5.5)+L(18,33,5.5)+'<circle cx="29" cy="19" r="2" fill="#fff"/>'},
+  "90":{rx:15,frame:"rgba(255,255,255,.4)",cam:'<circle cx="22" cy="21" r="11" fill="rgba(0,0,0,.35)" stroke="#e5e7ea" stroke-width="1.4"/>'+L(22,21,6)+'<circle cx="22" cy="46" r="11" fill="rgba(0,0,0,.35)" stroke="#e5e7ea" stroke-width="1.4"/>'+L(22,46,6)},
+  "pixel 8":{rx:12,frame:"rgba(0,0,0,.35)",cam:'<rect x="4" y="24" width="72" height="22" fill="#0b1016"/>'+L(24,35,7)+L(44,35,7)+'<circle cx="60" cy="35" r="3" fill="#cfd6dd"/>'},
+  "12":{rx:11,frame:"rgba(255,255,255,.3)",cam:'<circle cx="28" cy="28" r="20" fill="#0b1016" stroke="#d9d2c0" stroke-width="2"/>'+L(28,17,6)+L(18,34,6)+L(38,34,6)},
+  "12 pro":{rx:11,frame:"#d8c56a",cam:'<circle cx="26" cy="26" r="16" fill="rgba(0,0,0,.3)" stroke="#d8c56a" stroke-width="1.6"/>'+L(26,26,8,"#d8c56a")+L(40,14,3.2)},
+  "phone (2)":{rx:13,fill:"#e4e8ec",tx:"#222",frame:"#ffffff",cam:L(18,18,5.5,"#8a949e")+L(18,34,5.5,"#8a949e")+'<circle cx="40" cy="68" r="12" fill="none" stroke="#fff" stroke-width="2.5"/><rect x="12" y="60" width="56" height="2.5" rx="1.2" fill="#fff"/><rect x="12" y="78" width="56" height="2.5" rx="1.2" fill="#fff"/>'},
+  "galaxy s24+":{rx:9,frame:"#c9ced6",cam:L(18,20,6,"#b9c2cc")+L(18,36,6,"#b9c2cc")+L(18,52,6,"#b9c2cc")+'<circle cx="31" cy="16" r="1.8" fill="#fff"/>'},
+  "galaxy a35":{rx:12,frame:"rgba(0,0,0,.3)",cam:R(10,10,16,48,8,"rgba(0,0,0,.3)")+L(18,18,5)+L(18,34,5)+L(18,50,5)},
+  "iphone 15 pro max":{rx:11,fill:"#7a756d",frame:"#cbc3b6",cam:R(8,8,38,38,8,"rgba(255,255,255,.12)")+L(19,19,6.6)+L(19,35,6.6)+L(35,27,6.6)+'<circle cx="36" cy="13" r="2.2" fill="#f7e9b0"/>'},
+  "iphone se":{rx:9,fill:"#2c2f36",frame:"#c9cdd3",cam:L(18,18,7)+'<circle cx="30" cy="14" r="2.2" fill="#f7e9b0"/>'},
+  "redmi note 13 pro":{rx:10,frame:"rgba(0,0,0,.35)",cam:R(9,9,38,38,7,"rgba(0,0,0,.38)")+L(21,22,8.5,"#9aa6b2")+L(37,16,3.4)+L(37,28,3.4)+L(37,40,3.4)},
+  "poco f6":{rx:8,fill:"#2e2e33",frame:"rgba(255,255,255,.25)",cam:R(9,9,48,24,6,"rgba(0,0,0,.45)")+L(21,21,6.5)+L(39,21,6.5)+'<circle cx="51" cy="21" r="2.4" fill="#cfd6dd"/>'},
+  "magic6 pro":{rx:14,frame:"#d9c27a",cam:'<circle cx="30" cy="30" r="24" fill="rgba(0,0,0,.35)" stroke="#d9c27a" stroke-width="2"/>'+L(30,17,7)+L(19,37,7)+L(41,37,7)+'<circle cx="30" cy="30" r="2" fill="#cfd6dd"/>'},
+  "c67":{rx:10,frame:"rgba(0,0,0,.3)",cam:R(10,10,20,46,10,"rgba(0,0,0,.32)")+L(20,22,5.5)+L(20,44,5.5)+'<circle cx="38" cy="16" r="2" fill="#fff"/>'},
+  "spark 20 pro":{rx:11,frame:"rgba(255,255,255,.3)",cam:R(10,10,32,32,6,"rgba(0,0,0,.32)")+L(19,19,5)+L(33,19,5)+L(19,33,5)+L(33,33,5)},
+  "hot 40":{rx:12,frame:"rgba(0,0,0,.3)",cam:'<circle cx="25" cy="25" r="15" fill="rgba(0,0,0,.32)"/>'+L(25,25,8,"#9aa6b2")+'<circle cx="43" cy="14" r="2" fill="#fff"/><circle cx="43" cy="22" r="1.4" fill="#fff"/>'},
+  "v30":{rx:13,frame:"rgba(255,255,255,.3)",cam:'<circle cx="28" cy="28" r="19" fill="rgba(0,0,0,.28)"/>'+L(21,21,6)+L(21,38,6)+L(37,30,4.5)},
+  "reno 11":{rx:12,frame:"rgba(255,255,255,.3)",cam:R(9,9,24,54,12,"rgba(0,0,0,.3)")+L(21,23,6)+L(21,43,6)+'<circle cx="42" cy="18" r="2" fill="#fff"/>'},
+  // ---- Жаңа модельдер: әрқайсысының өз көрінісі ----
+  "galaxy s25 ultra":{rx:5,fill:"#3a3d44",frame:"#a9adb3",cam:L(15,18,5,"#c9ccd1")+L(15,32,5,"#c9ccd1")+L(15,46,5,"#c9ccd1")+L(15,60,5,"#c9ccd1")+'<circle cx="28" cy="16" r="1.8" fill="#fff"/><circle cx="28" cy="24" r="1.2" fill="#cfd6dd"/>'},
+  "galaxy z flip6":{rx:14,fill:"#b9d4e8",tx:"#222",frame:"#d9dee4",cam:R(8,8,64,58,10,"#0b1016")+L(20,22,6.5,"#9fb6c9")+L(20,42,6.5,"#9fb6c9")+'<circle cx="33" cy="16" r="1.8" fill="#fff"/><rect x="40" y="20" width="24" height="3" rx="1.5" fill="#3b5b7a"/><rect x="40" y="27" width="16" height="3" rx="1.5" fill="#3b5b7a"/><rect x="4" y="76" width="72" height="5" fill="rgba(0,0,0,.28)"/>'},
+  "galaxy z fold6":{rx:6,fill:"#2d3a4f",frame:"#9aa3ad",cam:'<rect x="4" y="4" width="6" height="152" fill="rgba(255,255,255,.18)"/>'+R(14,9,18,56,9,"rgba(0,0,0,.35)")+L(23,19,5.5)+L(23,35,5.5)+L(23,51,5.5)+'<circle cx="38" cy="16" r="1.8" fill="#fff"/>'},
+  "galaxy a25":{rx:12,fill:"#e3d6f0",tx:"#222",frame:"#cfc3dd",cam:L(17,18,5)+L(17,32,5)+L(17,46,5)+'<circle cx="29" cy="17" r="1.6" fill="#fff"/>'},
+  "iphone 16":{rx:14,fill:"#7fb8c9",frame:"#c8dde4",cam:R(10,10,18,38,9,"rgba(255,255,255,.22)")+L(19,19,6)+L(19,38,6)+'<circle cx="33" cy="19" r="2.2" fill="#f7e9b0"/><rect x="74" y="96" width="2" height="18" rx="1" fill="#5d8f9e"/>'},
+  "iphone 16 pro max":{rx:11,fill:"#b9a48a",frame:"#d6c7b2",cam:R(8,8,40,40,9,"rgba(255,255,255,.12)")+L(19,19,7)+L(19,37,7)+L(37,28,7)+'<circle cx="38" cy="13" r="2.2" fill="#f7e9b0"/>'},
+  "14t pro":{rx:10,fill:"#40464f",frame:"rgba(255,255,255,.3)",cam:R(8,8,42,42,10,"rgba(0,0,0,.45)")+L(19,19,7,"#c9a95a")+L(37,19,7)+L(19,37,7)+'<circle cx="37" cy="37" r="3" fill="#f7e9b0"/>'},
+  "redmi note 14 pro+":{rx:12,fill:"#6d4fa0",frame:"rgba(255,255,255,.3)",cam:R(8,8,44,40,14,"rgba(0,0,0,.4)")+L(22,28,10,"#c9b8e8")+L(42,18,4.5)+L(42,34,4.5)},
+  "pixel 9 pro":{rx:14,fill:"#e9e1d3",tx:"#222",frame:"#d8cfbf",cam:'<rect x="10" y="22" width="60" height="22" rx="11" fill="#0b1016" stroke="#cfd6dd" stroke-width="1.5"/>'+L(22,33,6.5)+L(36,33,6.5)+L(50,33,6.5)+'<circle cx="62" cy="33" r="2" fill="#f7e9b0"/>'},
+  "pixel 8a":{rx:16,fill:"#9ec9b0",tx:"#1f3a2c",frame:"rgba(0,0,0,.2)",cam:'<rect x="4" y="27" width="72" height="18" fill="#0b1016"/>'+L(26,36,6)+L(44,36,6)+'<circle cx="60" cy="36" r="2.5" fill="#cfd6dd"/>'},
+  "nord 4":{rx:11,fill:"#4b6f8f",frame:"#b7c4d0",cam:'<rect x="6" y="6" width="68" height="44" rx="10" fill="rgba(255,255,255,.18)"/>'+L(24,26,7.5)+L(46,26,7.5)+'<circle cx="62" cy="16" r="2" fill="#fff"/>'},
+  "phone (2a)":{rx:14,fill:"#2a2c30",frame:"#8a8f96",cam:'<rect x="22" y="14" width="36" height="20" rx="10" fill="#0b1016" stroke="#6b7078" stroke-width="1.2"/>'+L(31,24,6)+L(49,24,6)+'<path d="M14 58 A26 26 0 0 1 66 58" fill="none" stroke="#fff" stroke-width="2.2"/><path d="M22 140 L58 140" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>'},
+  "edge 50 pro":{rx:18,fill:"#b5a7cf",tx:"#222",frame:"#d9d1e6",cam:R(9,9,26,50,9,"rgba(255,255,255,.3)")+L(22,21,6.5)+L(22,39,6.5)+L(22,53,3.2)},
+  "moto g54":{rx:11,fill:"#2f4f6f",frame:"rgba(255,255,255,.25)",cam:R(9,9,32,32,8,"rgba(0,0,0,.35)")+L(19,19,6.5)+L(31,31,4.5)+'<circle cx="32" cy="17" r="2" fill="#fff"/>'},
+  "nova 12s":{rx:13,fill:"#d7c9a7",tx:"#222",frame:"#efe6d0",cam:'<circle cx="40" cy="32" r="21" fill="rgba(0,0,0,.35)" stroke="#e5e7ea" stroke-width="1.5"/>'+L(31,25,5.5)+L(49,25,5.5)+L(40,41,5.5)},
+  "xperia 1 vi":{rx:4,fill:"#2b2f36",frame:"#7c838c",cam:R(9,8,12,46,6,"#0b1016")+L(15,16,4)+L(15,31,4)+L(15,46,4)+'<circle cx="27" cy="12" r="1.6" fill="#fff"/><rect x="74" y="60" width="2" height="30" rx="1" fill="#7c838c"/>'},
+  "rog phone 8":{rx:8,fill:"#1e2228",frame:"#4a5059",cam:R(10,10,42,22,6,"rgba(0,0,0,.5)")+L(21,21,6)+L(35,21,6)+L(47,21,3)+'<path d="M10 62 L70 46 M10 69 L70 53" stroke="#ff2a4f" stroke-width="2"/>'},
+  "poco m6 pro":{rx:9,fill:"#3a3f4a",frame:"rgba(255,255,255,.25)",cam:R(9,9,42,28,6,"rgba(0,0,0,.45)")+L(21,23,7)+L(37,23,5)+'<rect x="46" y="13" width="3" height="20" fill="#ffd400"/>'},
+  "200":{rx:15,fill:"#d8e6e3",tx:"#222",frame:"#c3d4d0",cam:R(10,10,26,54,13,"rgba(0,0,0,.35)")+L(23,23,7.5)+L(23,48,7.5)+'<circle cx="44" cy="17" r="2" fill="#fff"/>'},
+  "gt 6":{rx:10,fill:"#3d4248",frame:"rgba(255,255,255,.25)",cam:R(9,9,34,42,8,"rgba(0,0,0,.4)")+L(20,21,6.5)+L(20,39,6.5)+L(35,21,3)+'<rect x="4" y="140" width="72" height="4" fill="#ff7a00"/>'},
+  "y36":{rx:13,fill:"#6fa8c8",frame:"rgba(255,255,255,.35)",cam:'<circle cx="21" cy="22" r="11" fill="rgba(0,0,0,.3)" stroke="#e5e7ea" stroke-width="1.2"/><circle cx="21" cy="48" r="11" fill="rgba(0,0,0,.3)" stroke="#e5e7ea" stroke-width="1.2"/>'+L(21,22,6)+L(21,48,6)+'<circle cx="40" cy="18" r="2" fill="#fff"/>'},
+  "a79":{rx:12,fill:"#4f8a6a",frame:"rgba(255,255,255,.3)",cam:R(10,10,22,46,11,"rgba(0,0,0,.32)")+L(21,22,6)+L(21,43,5)+'<circle cx="40" cy="17" r="2" fill="#fff"/>'}
+};
+function phoneArt(p){
+  var d = el("div","art"), body = '<rect x="4" y="4" width="72" height="152" rx="13"';
+  if(!p){
+    d.innerHTML = '<svg viewBox="0 0 80 160" aria-hidden="true">'+body+' fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4"/></svg>';
+    return d;
+  }
+  var key = p.model.toLowerCase().trim();
+  var ds = DESIGN[key] || {rx:13, frame:"rgba(0,0,0,.35)", cam:R(10,10,30,34,9,"rgba(0,0,0,.28)")+L(19,19,5.5)+L(31,19,5.5)+L(25,34,5.5)};
+  var t = 'text-anchor="middle" fill="'+(ds.tx||"#fff")+'" font-family="Manrope,sans-serif" font-weight="700"';
+  d.innerHTML = '<svg viewBox="0 0 80 160" role="img" aria-label="Смартфон">'+
+    '<rect x="4" y="4" width="72" height="152" rx="'+ds.rx+'" fill="'+(ds.fill||brandColor(p.brand))+'" stroke="'+ds.frame+'" stroke-width="2.5"/>'+
+    ds.cam+
+    '<text x="40" y="96" font-size="8" opacity=".85" '+t+'>'+esc(p.brand)+'</text>'+
+    '<text x="40" y="112" font-size="12" '+t+'>'+p.camera+' MP</text>'+
+    '<text x="40" y="128" font-size="10" '+t+'>'+p.memory+' GB</text></svg>';
+  return d;
+}
+function side(p, empty){
+  var s = el("div","side");
+  s.appendChild(phoneArt(p)); s.appendChild(el("b","", p ? name(p) : empty));
+  return s;
+}
+
+function renderCompare(){
+  var body = $("cmpBody"), a = picked[0], b = picked[1];
+  function head(){
+    body.innerHTML = "";
+    var vs = el("div","vs");
+    vs.appendChild(side(a, t("pick1")));
+    vs.appendChild(el("span","","VS"));
+    vs.appendChild(side(b, t("pick2")));
+    body.appendChild(vs);
+  }
+  if(!(a && b)){ head(); body.appendChild(el("div","empty",t("pickHint"))); return; }
+  api("/api/compare?a="+a.id+"&b="+b.id).then(function(res){
+    head();
+    var fills = [];
+    res.rows.forEach(function(r){
+      var x = r.a, y = r.b, max = Math.max(x,y);
+      body.appendChild(el("div","lbl2", t(COMPARE_KEYS[r.key] || r.key) + (r.winner===0 ? " · "+t("tie") : "")));
+      var duel = el("div","duel"), hl = el("div","half l"), hr = el("div","half");
+      var il = el("i"), ir = el("i");
+      if(r.winner===1) il.className = "win";
+      if(r.winner===2) ir.className = "win";
+      il.dataset.w = Math.max(8, Math.round(x/max*100));
+      ir.dataset.w = Math.max(8, Math.round(y/max*100));
+      hl.appendChild(il); hr.appendChild(ir); duel.appendChild(hl); duel.appendChild(hr);
+      body.appendChild(duel);
+      var vals = el("div","vals"); vals.appendChild(el("span","",String(x))); vals.appendChild(el("span","",String(y)));
+      body.appendChild(vals);
+      fills.push(il, ir);
+    });
+    var cw = res.camera.winner;
+    body.appendChild(el("div", cw ? "camwin" : "camwin tie",
+      cw ? t("camBetter")+": "+name(cw)+" (+"+res.camera.diff+" MP)" : t("camTie")+": "+a.camera+" MP"));
+    body.appendChild(el("div","spec",t("priceDiff")+": "+fmt(res.diff)));
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ fills.forEach(function(i){ i.style.width = i.dataset.w+"%" }) }) });
+  }).catch(offline);
+}
+
+["fBrand","fMin","fMax","fMem","fRam","fBat","fCam","fText","fSort"].forEach(function(id){ $(id).addEventListener("input", render) });
+$("fReset").addEventListener("click", function(){
+  ["fBrand","fMin","fMax","fText","fSort"].forEach(function(id){ $(id).value = "" });
+  ["fMem","fRam","fBat","fCam"].forEach(function(id){ $(id).value = "0" });
+  render();
+});
+
+// ---------- Қосу, өзгерту, жою ----------
+var FORM = {brand:"aBrand",model:"aModel",price:"aPrice",memory:"aMem",ram:"aRam",battery:"aBat",camera:"aCam"};
+var editing = null;
+function updateForm(){
+  $("formTitle").textContent = editing ? t("editTitle")+": "+name(editing) : t("addTitle");
+  $("aBtn").textContent = editing ? t("save") : t("add");
+  $("aCancel").hidden = !editing;
+}
+function clearForm(){
+  editing = null;
+  Object.keys(FORM).forEach(function(k){ $(FORM[k]).value = "" });
+  $("aErr").textContent = ""; updateForm();
+}
+function startEdit(p){
+  editing = p;
+  Object.keys(FORM).forEach(function(k){ $(FORM[k]).value = p[k] });
+  $("aErr").textContent = ""; updateForm();
+  $("formBox").scrollIntoView({behavior:"smooth", block:"center"});
+  render();
+}
+function removePhone(p){
+  if(!confirm(t("confirmDel").replace("{name}", name(p)))) return;
+  var form = new URLSearchParams(); form.set("id", p.id);
+  api("/api/phones/delete", {method:"POST", body:form}).then(function(){
+    picked = picked.filter(function(x){ return x.id !== p.id });
+    if(editing && editing.id === p.id) clearForm();
+    render();
+  }).catch(function(e){ alert(errText(e)) });
+}
+$("aCancel").addEventListener("click", function(){ clearForm(); render(); });
+$("aBtn").addEventListener("click", function(){
+  var form = new URLSearchParams();
+  Object.keys(FORM).forEach(function(k){ form.set(k, $(FORM[k]).value) });
+  if(editing) form.set("id", editing.id);
+  api(editing ? "/api/phones/update" : "/api/phones", {method:"POST", body:form}).then(function(){
+    clearForm(); render();
+  }).catch(function(e){ $("aErr").textContent = errText(e) });
+});
+
+applyLang();
+render();
+</script>
+</body>
+</html>
