@@ -12,7 +12,7 @@ from urllib.parse import urlparse, parse_qs
 
 import smartphones as sp
 
-PORT = 8000
+PORT = int(os.environ.get("PORT", 8000))
 HTML_FILE = os.path.join(sp.BASE, "web", "index.html")
 lock = threading.Lock()
 
@@ -151,6 +151,6 @@ if __name__ == "__main__":
     print(f"Python сервері іске қосылды: http://localhost:{PORT}")
     print(f"Каталогта {len(sp.catalog)} смартфон. Тоқтату үшін Ctrl+C басыңыз.")
     try:
-        ThreadingHTTPServer(("localhost", PORT), Handler).serve_forever()
+        ThreadingHTTPServer(("0.0.0.0", PORT), Handler).serve_forever()
     except KeyboardInterrupt:
         print("\nСервер тоқтатылды.")
