@@ -397,4 +397,7 @@ if __name__ == "__main__":
     except OSError:
         print(f"Қате: {CSV_FILE} файлын оқу мүмкін болмады.")
     else:
-        menu()
+        try:
+            menu()
+        except (EOFError, KeyboardInterrupt):
+            print("\nСау болыңыз!")
