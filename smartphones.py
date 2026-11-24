@@ -319,6 +319,43 @@ def show_statistics():
 
 
 # ---------- Мәзір ----------
+# ---------- Бюджет бойынша таңдау ----------
+# priority -> қай көрсеткіштер ұпайға есептеледі ("balance" - төртеуі де)
+PRIORITIES = {"camera": ("camera",), "battery": ("battery",), "memory": ("memory",),
+              "ram": ("ram",), "balance": ("camera", "battery", "memory", "ram")}
+
+
+def recommend(budget, priority="balance", limit=3):
+    """Бюджетке сыятын ең жақсы смартфондарды қайтарады (ұпайы бойынша кему ретімен).
+    Ұпай: әр көрсеткіш сүзілген смартфондар ішіндегі ең үздігіне бөлінеді (0..1), қосылады.
+    Ұпай тең болса, арзаны алда тұрады. Қате берілсе ValueError шығарады."""
+    if isinstance(budget, bool) or not isinstance(budget, int) or budget <= 0:
+        raise ValueError("Бюджет оң бүтін сан болуы керек.")
+    if priority not in PRIORITIES:
+        raise ValueError("Басымдық белгісіз: " + str(priority))
+    candidates = [p for p in catalog if p["price"] <= budget]
+    if not candidates:
+        return []
+    keys = PRIORITIES[priority]
+    best = {k: max(p[k] for p in candidates) for k in keys}
+    candidates.sort(key=lambda p: (-sum(p[k] / best[k] for k in keys), p["price"]))
+    return candidates[:limit]
+
+
+def recommend_menu():
+    """Бюджет пен басымдықты сұрап, 3 үздік смартфонды шығарады."""
+    budget = read_int("Бюджет (₸): ")
+    print("1.Камера  2.Аккумулятор  3.Жады  4.RAM  5.Тепе-тең")
+    kind = read_int("Басымдық: ", 1)
+    priority = ["camera", "battery", "memory", "ram", "balance"][kind - 1] if kind <= 5 else "balance"
+    result = recommend(budget, priority)
+    if not result:
+        print(f"{budget} ₸ бюджетке сыятын смартфон жоқ.")
+        return
+    print(f"Бюджетке сай үздік {len(result)} смартфон:")
+    show_catalog(result)
+
+
 def search_menu():
     """Іздеу түрін таңдатып, нәтижені шығарады."""
     print("\n1.Бренд бойынша  2.Баға бойынша  3.Жады бойынша  4.Бренд + жады")
@@ -349,7 +386,7 @@ def menu():
         print("1.Смартфон қосу      2.Іздеу             3.Камераны салыстыру\n"
               "4.Екі смартфонды салыстыру              5.Ең арзан / ең қымбат\n"
               "6.Статистика         7.Каталогты шығару  8.Өзгерту\n"
-              "9.Жою                0.Шығу")
+              "9.Жою               10.Бюджет бойынша таңдау   0.Шығу")
         choice = read_int("Таңдау: ", 0)
         match choice:
             case 0:
@@ -387,6 +424,8 @@ def menu():
                     update_phone()
                 else:
                     delete_phone()
+            case 10:
+                recommend_menu()
             case _:
                 print("  Қате: мәзірде мұндай пункт жоқ.")
 

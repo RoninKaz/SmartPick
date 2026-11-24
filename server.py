@@ -106,6 +106,12 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json({"items": filter_phones(params), "total": len(sp.catalog)})
             elif url.path == "/api/stats":
                 self.send_json(stats())
+            elif url.path == "/api/recommend":
+                try:
+                    items = sp.recommend(num(params, "budget", -1), params.get("priority", ["balance"])[0])
+                    self.send_json({"items": items})
+                except ValueError as e:
+                    self.send_json({"error": str(e)}, 400)
             elif url.path == "/api/compare":
                 a, b = sp.find_by_id(num(params, "a", -1)), sp.find_by_id(num(params, "b", -1))
                 if a is None or b is None:

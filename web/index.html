@@ -48,6 +48,8 @@ section.box h2{margin:0 0 10px;font-size:20px}
 .add label{display:flex;flex-direction:column;font-size:14px;color:var(--mute);gap:3px}
 .err{color:var(--bad);font-weight:600;margin-top:8px;min-height:1.5em}
 .empty{color:var(--mute);padding:12px 0}
+.picker .cards{margin-top:12px}
+.picker select{min-width:150px}
 .count{color:var(--mute);font-size:14px;margin-bottom:8px}
 .layout{display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start}
 .layout>*{min-width:0}
@@ -114,6 +116,17 @@ body{transition:background .25s,color .25s}
 <div class="stat"><small data-i18n="avg"></small><b id="stAvg">–</b></div>
 </div>
 
+<section class="box picker" id="picker">
+<h2 data-i18n="pickTitle"></h2>
+<div class="add">
+<label><span data-i18n="budget"></span><input id="pBudget" type="number" min="1" data-i18n-ph="pickEg"></label>
+<label><span data-i18n="priority"></span><select id="pPrio"><option value="balance" data-i18n="prBalance"></option><option value="camera" data-i18n="prCamera"></option><option value="battery" data-i18n="prBattery"></option><option value="memory" data-i18n="prMemory"></option><option value="ram" data-i18n="prRam"></option></select></label>
+<button id="pBtn" data-i18n="pickBtn"></button>
+</div>
+<div class="err" id="pErr" role="alert"></div>
+<div class="cards" id="pCards" aria-live="polite"></div>
+</section>
+
 <div class="filters">
 <label><span data-i18n="brand"></span><select id="fBrand"></select></label>
 <label><span data-i18n="priceMin"></span><input id="fMin" type="number" min="0" placeholder="0"></label>
@@ -162,7 +175,7 @@ var I18N = {
   priceMin:"Баға, ₸ (ең төмен)",priceMax:"Баға, ₸ (ең жоғары)",noLimit:"шектеусіз",memMin:"Жады (ең аз)",ramMin:"RAM (ең аз)",
   batMin:"Аккумулятор (ең аз)",camMin:"Камера (ең аз)",any:"Кез келген",modelName:"Модель аты",eg:"мысалы, Pro",
   sort:"Тартып реттеу",sortNone:"Каталог ретімен",sortPriceAsc:"Баға: арзандан қымбатқа",sortPriceDesc:"Баға: қымбаттан арзанға",
-  sortCam:"Камера: көптен азға",sortBat:"Аккумулятор: көптен азға",sortRam:"RAM: көптен азға",reset:"Тазалау",
+  sortCam:"Камера: көптен азға",sortBat:"Аккумулятор: көптен азға",sortRam:"RAM: көптен азға",reset:"Тазалау",pickTitle:"Бюджет бойынша таңдау",budget:"Бюджет, ₸",priority:"Не маңызды",prCamera:"Камера",prBattery:"Аккумулятор",prMemory:"Жады",prRam:"RAM",prBalance:"Тепе-тең",pickBtn:"Таңдау",pickEg:"мысалы, 200000",pickNone:"Бұл бюджетке сыятын смартфон жоқ.",errBudget:"Бюджетті оң сан етіп енгізіңіз.",
   compare:"Салыстыру",cmpCheck:"Салыстыру",addTitle:"Смартфон қосу",editTitle:"Өзгерту",add:"Қосу",save:"Сақтау",cancel:"Болдырмау",
   edit:"Өзгерту",del:"Жою",all:"Барлығы",found:"Табылды",nothing:"Ештеңе табылмады. Сүзгіні өзгертіп көріңіз.",
   price:"Баға, ₸",memory:"Жады, GB",ram:"RAM, GB",battery:"Аккумулятор, mAh",camera:"Камера, MP",
@@ -177,7 +190,7 @@ var I18N = {
   priceMin:"Цена, ₸ (от)",priceMax:"Цена, ₸ (до)",noLimit:"без ограничения",memMin:"Память (от)",ramMin:"RAM (от)",
   batMin:"Аккумулятор (от)",camMin:"Камера (от)",any:"Любая",modelName:"Название модели",eg:"например, Pro",
   sort:"Сортировка",sortNone:"Как в каталоге",sortPriceAsc:"Цена: сначала дешёвые",sortPriceDesc:"Цена: сначала дорогие",
-  sortCam:"Камера: больше MP",sortBat:"Аккумулятор: больше mAh",sortRam:"RAM: больше",reset:"Сбросить",
+  sortCam:"Камера: больше MP",sortBat:"Аккумулятор: больше mAh",sortRam:"RAM: больше",reset:"Сбросить",pickTitle:"Подбор по бюджету",budget:"Бюджет, ₸",priority:"Что важнее",prCamera:"Камера",prBattery:"Аккумулятор",prMemory:"Память",prRam:"RAM",prBalance:"Баланс",pickBtn:"Подобрать",pickEg:"например, 200000",pickNone:"На этот бюджет телефонов нет.",errBudget:"Введите бюджет положительным числом.",
   compare:"Сравнение",cmpCheck:"Сравнить",addTitle:"Добавить смартфон",editTitle:"Изменить",add:"Добавить",save:"Сохранить",cancel:"Отмена",
   edit:"Изменить",del:"Удалить",all:"Все",found:"Найдено",nothing:"Ничего не найдено. Попробуйте изменить фильтры.",
   price:"Цена, ₸",memory:"Память, GB",ram:"RAM, GB",battery:"Аккумулятор, mAh",camera:"Камера, MP",
@@ -192,7 +205,7 @@ var I18N = {
   priceMin:"Price, ₸ (min)",priceMax:"Price, ₸ (max)",noLimit:"no limit",memMin:"Storage (min)",ramMin:"RAM (min)",
   batMin:"Battery (min)",camMin:"Camera (min)",any:"Any",modelName:"Model name",eg:"e.g. Pro",
   sort:"Sort by",sortNone:"Catalog order",sortPriceAsc:"Price: low to high",sortPriceDesc:"Price: high to low",
-  sortCam:"Camera: highest first",sortBat:"Battery: largest first",sortRam:"RAM: most first",reset:"Reset",
+  sortCam:"Camera: highest first",sortBat:"Battery: largest first",sortRam:"RAM: most first",reset:"Reset",pickTitle:"Pick by budget",budget:"Budget, ₸",priority:"What matters most",prCamera:"Camera",prBattery:"Battery",prMemory:"Storage",prRam:"RAM",prBalance:"Balanced",pickBtn:"Find phones",pickEg:"e.g. 200000",pickNone:"No phones fit this budget.",errBudget:"Enter the budget as a positive number.",
   compare:"Compare",cmpCheck:"Compare",addTitle:"Add a phone",editTitle:"Edit",add:"Add",save:"Save",cancel:"Cancel",
   edit:"Edit",del:"Delete",all:"All",found:"Found",nothing:"Nothing found. Try changing the filters.",
   price:"Price, ₸",memory:"Storage, GB",ram:"RAM, GB",battery:"Battery, mAh",camera:"Camera, MP",
@@ -226,6 +239,7 @@ function applyLang(){
   document.querySelectorAll(".seg button").forEach(function(b){ b.setAttribute("aria-pressed", b.dataset.lang === lang) });
   var all = $("fBrand").options[0]; if(all) all.textContent = t("all");
   updateForm(); updateThemeBtn();
+  if($("pBudget").value) pickByBudget();
 }
 document.querySelectorAll(".seg button").forEach(function(b){
   b.addEventListener("click", function(){ lang = b.dataset.lang; store("sp_lang", lang); applyLang(); render(); });
@@ -493,6 +507,28 @@ $("aBtn").addEventListener("click", function(){
     clearForm(); render();
   }).catch(function(e){ $("aErr").textContent = errText(e) });
 });
+
+// ---------- Бюджет бойынша таңдау ----------
+function pickByBudget(){
+  var budget = parseInt($("pBudget").value, 10), box = $("pCards");
+  $("pErr").textContent = ""; box.innerHTML = "";
+  if(!(budget > 0)){ $("pErr").textContent = t("errBudget"); return; }
+  api("/api/recommend?budget=" + budget + "&priority=" + encodeURIComponent($("pPrio").value)).then(function(res){
+    if(!res.items.length){ box.appendChild(el("div","empty",t("pickNone"))); return; }
+    res.items.forEach(function(p, i){
+      var c = el("div","card" + (i === 0 ? " sel" : ""));
+      c.appendChild(el("span","brand",p.brand));
+      c.appendChild(el("h3","",p.model));
+      c.appendChild(el("div","price",fmt(p.price)));
+      c.appendChild(el("div","spec",p.memory+" GB · "+p.ram+" GB RAM"));
+      c.appendChild(el("div","spec",p.camera+" MP · "+p.battery+" mAh"));
+      c.appendChild(el("span","tag cheap","#" + (i + 1)));
+      box.appendChild(c);
+    });
+  }).catch(function(e){ $("pErr").textContent = errText(e) });
+}
+$("pBtn").addEventListener("click", pickByBudget);
+$("pBudget").addEventListener("keydown", function(e){ if(e.key === "Enter") pickByBudget(); });
 
 applyLang();
 render();

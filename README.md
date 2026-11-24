@@ -9,6 +9,7 @@
 SmartPick/
 ├── smartphones.py      ← жобаның ядросы: барлық функциялар + консоль мәзірі
 ├── server.py           ← Python веб-сервері, smartphones.py функцияларын шақырады
+├── test_smartphones.py ← автоматты тесттер (28 тест)
 ├── data/phones.csv     ← 52 смартфон, 16 бренд
 ├── web/
 │   ├── index.html      ← сайт беті (HTML, CSS, JavaScript)
@@ -17,6 +18,7 @@ SmartPick/
 ├── docs/logo.png       ← жоба логотипі
 ├── run_site.bat        ← сайтты компьютерде ашу (http://localhost:8000)
 ├── run_console.bat     ← консоль мәзірі
+├── run_tests.bat       ← тесттерді іске қосу
 ├── requirements.txt    ← сыртқы кітапхана жоқ
 └── render.yaml         ← Render хостингіне арналған баптау
 ```
@@ -27,6 +29,7 @@ SmartPick/
 |---|---|
 | Сайт (компьютерде) | `run_site.bat` немесе `python server.py` → http://localhost:8000 |
 | Консоль мәзірі | `run_console.bat` немесе `python smartphones.py` |
+| Тесттер | `run_tests.bat` немесе `python -m unittest -v test_smartphones` |
 | Интернетте | Render: Start Command `python server.py` |
 
 Python 3.10 немесе жаңасы керек. Қосымша кітапхана орнатудың қажеті жоқ.
@@ -35,7 +38,7 @@ Python 3.10 немесе жаңасы керек. Қосымша кітапха�
 
 `load_catalog`, `save_catalog`, `read_int`, `read_text`, `validate`, `show_catalog`, `add_phone`, `search`,
 `find_by_id`, `update_phone`, `delete_phone`, `cheapest`, `most_expensive`, `winner`, `compare_camera`,
-`compare_phones`, `average_price`, `count_by_brand`, `show_statistics`, `search_menu`, `menu` және т.б. — барлығы 27.
+`compare_phones`, `average_price`, `count_by_brand`, `show_statistics`, `recommend`, `recommend_menu`, `search_menu`, `menu` және т.б.
 
 Бір функцияны әртүрлі жолмен шақыру (Method Overloading баламасы):
 
@@ -47,6 +50,17 @@ Python 3.10 немесе жаңасы керек. Қосымша кітапха�
 
 Консоль мәзірінде `match`, циклдар, тармақталу және қателерді өңдеу (`try/except`) қолданылады.
 
+## Бюджет бойынша таңдау
+
+`recommend(budget, priority="balance", limit=3)` бюджетке сыятын смартфондарды алады. Әр көрсеткіш (камера, аккумулятор, жады, RAM)
+сүзілген смартфондар ішіндегі ең үздігіне бөлініп 0-ден 1-ге дейінгі ұпай шығады, ұпай тең болса арзаны алда тұрады.
+Сайтта бұл жеке блок, консольде - 10-пункт. Қате бюджет `ValueError` шығарады.
+
+## Тесттер
+
+`test_smartphones.py` ішінде 28 тест (`unittest`): іздеу, камераны салыстыру, қосу/өзгерту/өшіру, қате енгізуді тексеру,
+бюджет бойынша таңдау және сервер функциялары. Тесттер нақты `data/phones.csv` файлына тиіспейді: уақытша көшірмемен жұмыс істейді.
+
 ## API (server.py)
 
 | Сұраныс | Не істейді |
@@ -54,6 +68,7 @@ Python 3.10 немесе жаңасы керек. Қосымша кітапха�
 | `GET /api/phones` | сүзгі және сұрыптау (brand, min, max, memory, ram, battery, camera, q, sort) |
 | `GET /api/stats` | статистика |
 | `GET /api/compare?a=1&b=2` | екі смартфонды салыстыру |
+| `GET /api/recommend?budget=200000&priority=camera` | бюджетке сай 3 үздік смартфон (priority: camera, battery, memory, ram, balance) |
 | `POST /api/phones` | жаңа смартфон қосу |
 | `POST /api/phones/update` | өзгерту |
 | `POST /api/phones/delete` | өшіру |
