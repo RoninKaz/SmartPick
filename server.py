@@ -115,6 +115,12 @@ class Handler(BaseHTTPRequestHandler):
             else:
                 self.send_json({"error": "Бет табылмады."}, 404)
 
+    def do_HEAD(self):
+        # Render сайттың жұмысын HEAD сұранысымен тексеруі мүмкін: денесіз 200 жауап береміз
+        self.send_response(200 if urlparse(self.path).path in ("/", "/index.html") else 404)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.end_headers()
+
     def do_POST(self):
         path = urlparse(self.path).path
         length = int(self.headers.get("Content-Length", 0))
@@ -148,8 +154,8 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     sp.load_catalog()
-    print(f"Python сервері іске қосылды: http://localhost:{PORT}")
-    print(f"Каталогта {len(sp.catalog)} смартфон. Тоқтату үшін Ctrl+C басыңыз.")
+    print(f"Python сервері іске қосылды: http://localhost:{PORT}", flush=True)
+    print(f"Каталогта {len(sp.catalog)} смартфон. Тоқтату үшін Ctrl+C басыңыз.", flush=True)
     try:
         ThreadingHTTPServer(("0.0.0.0", PORT), Handler).serve_forever()
     except KeyboardInterrupt:
