@@ -12,7 +12,7 @@ from urllib.parse import urlparse, parse_qs
 
 import smartphones as sp
 
-PORT = int(os.environ.get("PORT", 8000))
+PORT = int(os.environ.get("PORT", 8000))  # Render өз портын осы айнымалы арқылы береді
 HTML_FILE = os.path.join(sp.BASE, "web", "index.html")
 lock = threading.Lock()
 

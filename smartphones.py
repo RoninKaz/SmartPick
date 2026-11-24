@@ -1,12 +1,12 @@
 # Смартфондар каталогы - Python нұсқасы (Python 3.10+)
 # Бұл файл - жобаның "ядросы": консоль мәзірі де, веб-сервер (server.py) де осы функцияларды қолданады.
 # Іске қосу (консоль):  python smartphones.py
-# Java-дағы Method Overloading орнына әдепкі параметрлер (None) және параметрді шарт арқылы тексеру қолданылады.
+# Бір функция әртүрлі жолмен шақырылады: әдепкі параметрлер (None), **kwargs және isinstance арқылы тексеру.
 
 import csv
 import os
 
-BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE = os.path.dirname(os.path.abspath(__file__))
 CSV_FILE = os.path.join(BASE, "data", "phones.csv")
 FIELDS = ["brand", "model", "price", "memory", "ram", "battery", "camera"]
 NUMBER_KEYS = ["price", "memory", "ram", "battery", "camera"]
@@ -121,7 +121,7 @@ def show_catalog(phones=None):
 # ---------- Смартфон қосу ----------
 def add_phone(brand=None, model=None, **numbers):
     """Смартфон қосады. Параметр берілмесе - мәліметті пайдаланушыдан сұрайды
-    (Java-дағы addPhone() және addPhone(brand, model, ...) нұсқаларының баламасы)."""
+    (параметрсіз шақырсаң - пернетақтадан сұрайды, параметрмен - бірден қосады)."""
     global next_id
     if brand is None:
         brand = read_text("Бренд: ")
@@ -140,7 +140,7 @@ def add_phone(brand=None, model=None, **numbers):
 def search(brand=None, min_price=0, max_price=None, memory=0):
     """Смартфондарды іздейді. Берілмеген параметр сүзгіге қатыспайды.
     search(brand="Apple"), search(min_price=1, max_price=2), search(memory=256),
-    search(brand="Samsung", memory=256) - Java-дағы search() нұсқаларының баламасы."""
+    search(brand="Samsung", memory=256) - кез келген сүзгіні бірге қолдануға болады."""
     result = []
     for p in catalog:
         if brand is not None and p["brand"].lower() != brand.strip().lower():
